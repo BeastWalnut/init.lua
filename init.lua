@@ -1,4 +1,5 @@
 require("options")
+require("keymaps")
 require("autocmd")
 
 local colorscheme = "default"
