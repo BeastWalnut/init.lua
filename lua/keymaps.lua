@@ -6,8 +6,8 @@ set_keymap("n", "<Leader>qr", [[:%s/\<<C-r><C-w>\>/]], { desc = "Query Replace" 
 
 -- Move highlighted lines up or down
 utils.set_keymap({
-    K = { "<Cmd>m '<-2<Cr>gv=gv", desc = "Move hightlight up" },
-    J = { "<Cmd>m '>+1<Cr>gv=gv", desc = "Move hightlight down" },
+    K = { ":m '<-2<Cr>gv=gv", desc = "Move lines up" },
+    J = { ":m '>+1<Cr>gv=gv", desc = "Move lines down" },
 }, { mode = "x" })
 
 -- Remove '\n' without moving cursor
