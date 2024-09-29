@@ -8,7 +8,7 @@ set_keymap("n", "<Leader>qr", [[:%s/\<<C-r><C-w>\>/]], { desc = "Query Replace" 
 utils.set_keymap({
     K = { "<Cmd>m '<-2<Cr>gv=gv", desc = "Move hightlight up" },
     J = { "<Cmd>m '>+1<Cr>gv=gv", desc = "Move hightlight down" },
-}, { mode = "v" })
+}, { mode = "x" })
 
 -- Remove '\n' without moving cursor
 set_keymap("n", "J", "mzJ`z", { desc = "Join line", noremap = true })
@@ -36,12 +36,19 @@ utils.set_keymap({
     d = { '"+d', desc = "d" },
     D = { '"+D', desc = "D" },
 }, {
-    mode = { "n", "v" },
+    mode = { "n", "x" },
     prefix = "<Leader>",
     name = "Clipboard",
 })
 
-set_keymap({ "n", "v" }, "x", '"_x')
+-- Void delete
+utils.set_keymap({
+    x = { '"_x' },
+    X = { '"_X' },
+}, {
+    mode = { "n", "x" },
+    name = "Void",
+})
 
 -- Number Interactions
 utils.set_keymap({
