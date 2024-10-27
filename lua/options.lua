@@ -19,9 +19,10 @@ opt.smartindent = false
 opt.ignorecase = true
 opt.smartcase = true
 
-opt.undodir = vim.fn.stdpath("data") .. "/undo"
+opt.undodir = os.getenv("HOME") .. "/.vim/undo"
 opt.undofile = true
 opt.swapfile = false
+opt.backup = false
 
 -- Search highlights
 opt.incsearch = true
