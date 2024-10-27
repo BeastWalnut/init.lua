@@ -26,7 +26,7 @@ M.DEFAULT_OPTS = {
 ---@field [1] string | fun() keymap rhs
 ---@field desc? string description
 
----@alias keymap.Specs table<string, keymap.Spec>
+---@alias keymap.Specs table<string, keymap.Spec|string>
 
 ---@param lhs string
 ---@param spec keymap.Spec
@@ -41,6 +41,48 @@ local function validate_spec(lhs, spec, nil_rhs)
     }
 end
 
+---Converts `keyspec` to `LazyKeysSpec` format adding `opts` to each of them
+---@param keyspec keymap.Specs
+---@param opts keymap.Options
+---@return LazyKeysSpec[]
+function M.lazy_spec(keyspec, opts)
+    opts = vim.tbl_extend("force", M.DEFAULT_OPTS, opts or {})
+    ---@module "lazy"
+
+    ---@type LazyKeysSpec[]
+    local result = {}
+
+    for lhs, keymap in pairs(keyspec) do
+        if type(keymap) == "string" then
+            keymap = { keymap }
+        end
+        vim.validate(validate_spec(lhs, keymap, true))
+        local lazy_spec = vim.tbl_extend("keep", keymap, opts) --[[@as LazyKeysSpec]]
+
+        if opts.prefix then
+            lhs = opts.prefix .. lhs
+        end
+
+        if opts.name then
+            if keymap.desc then
+                lazy_spec.desc = ("%s: %s"):format(opts.name, keymap.desc)
+            else
+                local raw_lhs = vim.api.nvim_replace_termcodes(lhs, true, true, false)
+                lazy_spec.desc = ("%s: %s"):format(opts.name, raw_lhs)
+            end
+        end
+
+        -- stylua: ignore
+        ---@diagnostic disable-next-line: inject-field
+        lazy_spec.name = nil                 		        lazy_spec.prefix = nil
+
+        lazy_spec[1] = lhs
+        lazy_spec[2] = keymap[1]
+        table.insert(result, lazy_spec)
+    end
+    return result
+end
+
 ---Defines all keymaps from `keyspec` adding `opts` to each of them
 ---@param keyspec keymap.Specs
 ---@param opts? keymap.Options
@@ -48,6 +90,9 @@ function M.set_keymap(keyspec, opts)
     opts = vim.tbl_extend("force", M.DEFAULT_OPTS, opts or {})
 
     for lhs, keymap in pairs(keyspec) do
+        if type(keymap) == "string" then
+            keymap = { keymap }
+        end
         vim.validate(validate_spec(lhs, keymap))
         local _opts = vim.tbl_extend("force", opts, keymap)
 
